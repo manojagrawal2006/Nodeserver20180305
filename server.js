@@ -183,7 +183,7 @@ app.get("/getPackage_Master",cors(corsOptions),function(req,res){
 	
 
 var query = 
-        '    select v.Vendor_Name,v.LogoPath,v.Email_id,v.Contact_No, vpo.vendor_caterer_package_offers, dt.description dishtype, ct.description  cuisinestype,   vm.*,  '
+        '    select v.Vendor_Name, v.Address vendoraddress, v.LogoPath,v.Email_id,v.Contact_No, vpo.vendor_caterer_package_offers, dt.description dishtype, ct.description  cuisinestype,   vm.*,  '
         + '  vpo.rangefrom,vpo.rangeto,vpo.offer_price  '
         + '      from vendor_caterer_package_master vm '
         + '    left join vendor_type vt on vm.vendor_type_cd = vt.vendor_type_cd  '
