@@ -64,6 +64,7 @@ function handle_database(query,req,res) {
   });
 }
 
+
 //Setting up server
  var server = app.listen(process.env.PORT || 8080, function () {
     var port = server.address().port;
@@ -72,7 +73,7 @@ function handle_database(query,req,res) {
  
 var corsOptions = {
     origin: 'http://deals2party.com.s3-website.ap-south-1.amazonaws.com',
-	//origin: 'http://localhost:4200',
+//	origin: 'http://localhost:4200',
    optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204 
 } 
 
@@ -160,6 +161,45 @@ console.log(query);
 				
 });
 
+ app.post("/UpdateCommunication", function(req , res){
+ console.log("UpdateCommunication");
+     // var d = new Date();
+    // var invoiceNumber = d.getMonth() + d.getDate() + d.getFullYear() + d.getHours() + d.getMinutes() + d.getSeconds() + d.getMilliseconds();
+ var query ="";
+ console.log(req.body.length);
+	 
+	 query = "	INSERT INTO  `D2P`.`order_communication_status`  (Invoice_No, order_communication_mode, communication_to, status) VALUES ( " 
+						+  req.body.invoiceNumber + ", '" +  req.body.mode + "', '" +  req.body.To + "', '"  +  req.body.status + "') "
+	
+console.log(query);
+		handle_database(query, req, res);
+	
+				
+				
+});
+
+function handle_Email_database(query) {
+    pool.getConnection(function(err,connection){
+        if (err) {
+          //res.json({"code" : 100, "status" : "Error in connection database"});
+          return "Error";
+        }   
+       // // console.log('connected as id ' + connection.threadId);
+        connection.query(query,function(err,rows){
+            connection.release();
+            if(!err) {
+				return "success";
+                res.json(rows);
+            }           
+        });
+
+        connection.on('error', function(err) {      
+              return "Error";  
+        });
+  });
+}
+
+
  app.post("/SendD2PEmail", function(req , res){
 
 var mailOptions = {
@@ -170,17 +210,50 @@ var mailOptions = {
 };
 
 transporter.sendMail(mailOptions, function(error, info){
-  if (error) {
-    // console.log(error);
-  } else {
-    // console.log('Email sent: ' + info.response);
-  }
+         // if(error){
+             // res.send("Email could not sent due to error: "+error);
+        // }else{
+             // res.send("Requerimiento enviado con éxito");
+        // } 
+		
+		// if(error){
+             // res.send("Email could not sent due to error: "+error);
+        // }else{
+             // res.send("Requerimiento enviado con éxito");
+        // } 
+		if (error) {
+			console.log("Error in sending mail");
+			console.log(error);
+			query = "	INSERT INTO  `D2P`.`order_communication_status`  (Invoice_No, order_communication_mode, communication_to, status) VALUES ( " 
+						+  req.body.invoiceNumber + ", '" +  req.body.mode + "', '" +  req.body.To + "', 'failed') "
+	
+			console.log(query);
+			handle_Email_database(query);
+          res.json({"code" : 100, "status" : "Error in sending mail"});
+          return;
+        }   
+		else
+		{
+			console.log(res);
+			 var query ="";
+			console.log(req.body.length);
+	 
+			query = "	INSERT INTO  `D2P`.`order_communication_status`  (Invoice_No, order_communication_mode, communication_to, status) VALUES ( " 
+						+  req.body.invoiceNumber + ", '" +  req.body.mode + "', '" +  req.body.To + "', 'success') "
+	
+			console.log(query);
+			handle_Email_database(query);
+		
+			res.json({"code" : 0, "status" : "Successfully sent mail"});
+          return;
+		}
 });
 });
 
 app.get("/getPackage_Master",cors(corsOptions),function(req,res){
 	var q = url.parse(req.url, true).query;
-	
+
+console.log(q);	
 
 var query = 
         '    select v.Vendor_Name, v.Address vendoraddress, v.LogoPath,v.Email_id,v.Contact_No, vpo.vendor_caterer_package_offers, dt.description dishtype, ct.description  cuisinestype,   vm.*,  '
@@ -194,7 +267,7 @@ var query =
 		+ ' left join vendor_master v on vm.Vendor_Id=v.Vendor_Id'
         + ' where rangefrom is not null and rangeto is not null	and vpo.pin=' + + q.pin
 
-		// console.log(query);
+		 console.log(query);
 		handle_database(query,
         req, res);
 });
@@ -209,7 +282,7 @@ app.get("/getCustomerOrderEmailData",cors(corsOptions),function(req,res){
 	
 var query = "    select distinct v.Vendor_Id,v.Vendor_Name,v.Email_id vendor_Email_Id, om.Invoice_No,om.Order_Date,om.Total_Amount,om.GuestCount,vpo.vendor_caterer_package_offers," 
 + " vpo.Offer_Price, vm.Package_Name,vm.Package_Desc,vm.Package_Price" 
-+ " ,dt.description packagedishtype,  ct.description  cuisinestype, " 
++ " ,dt.description packagedishtype,  ct.description  packagecuisinestype, " 
 + " v.Vendor_Name, v.Email_id,v.Address,v.Contact_No,dm.Description DishName,dt1.description dishtype,  ct1.description  cuisinestype " 
 + " ,cot.Description courseType " 
 + " from order_master om " 
@@ -226,7 +299,7 @@ var query = "    select distinct v.Vendor_Id,v.Vendor_Name,v.Email_id vendor_Ema
 + "  where om.Cust_Id="+ q.Cust_Id +" and om.Order_Status_CD=2 and om.Invoice_No= " + q.Invoice_No 
 + "  order by v.Vendor_Id,vpo.vendor_caterer_package_offers,cot.Course_Type_ID,dm.Dish_Type_ID "
 
-	// console.log(query);
+	 console.log(query);
 		handle_database(query,
         req, res);
 });
@@ -261,7 +334,7 @@ var query = "    select distinct v.Vendor_Id,v.Vendor_Name,v.Email_id vendor_Ema
 app.get("/getOrderHistory",cors(corsOptions),function(req,res){
 	var q = url.parse(req.url, true).query;
 	
-var query =  "   select distinct v.Vendor_Id,v.Vendor_Name,v.Email_id vendor_Email_Id, om.Invoice_No,om.Order_Date,om.Total_Amount,om.GuestCount, vpo.vendor_caterer_package_offers, " 
+var query =  "   select distinct v.Vendor_Id,v.Vendor_Name,v.Email_id vendor_Email_Id, om.Invoice_No,om.Order_Date,om.CreatedOn, om.Total_Amount,om.GuestCount, vpo.vendor_caterer_package_offers, " 
 + " 	   vpo.Offer_Price, vm.Package_Name,vm.Package_Desc,vm.Package_Price "
 + " 	    ,dt.description packagedishtype,  IFNULL(ct.description,'')  cuisinestype, "
 + " 	    v.Vendor_Name, v.Email_id,v.Address,v.Contact_No " 
@@ -473,7 +546,6 @@ app.get("/getCuisines_type",cors(corsOptions),function(req,res){-
         // + ' where rangefrom is not null and rangeto is not null	'
         // , req, res);
 // });
-
 
 
 app.get("/getDishType",cors(corsOptions), function (req, res) {-
