@@ -73,7 +73,7 @@ function handle_database(query,req,res) {
  
 var corsOptions = {
     origin: 'http://deals2party.com.s3-website.ap-south-1.amazonaws.com',
-//	origin: 'http://localhost:4200',
+	//origin: 'http://localhost:4200',
    optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204 
 } 
 
@@ -111,11 +111,11 @@ app.get("/api/user" ,cors(corsOptions), function(req , res){
 	 query = query +	" delete from order_master where `Order_Status_CD` = 1 and Cust_Id=" + req.body[0].Cust_Id + "; "
 	 
 	 for (i = 0; i < req.body.length; i++) { 
-		//console.log(req.body[i]);
+		console.log(req.body[i]);
 		
-	query = query +	" INSERT INTO `D2P`.`order_master` (`Order_Date`,`Cust_Id`,`Invoice_No`,`Order_Status_CD`,`Total_Amount`, " +
+	query = query +	" INSERT INTO `D2P`.`order_master` (`Order_Date`, `Order_Time`,  `Cust_Id`,`Invoice_No`,`Order_Status_CD`,`Total_Amount`, " +
 	"`Vendor_Caterer_Package_Offers`,`GuestCount`) "
-		+ "VALUES ( '" + req.body[i].partyDate + "',"+  req.body[i].Cust_Id +",'" + req.body[i].Cust_Id + "', 1, " +
+		+ "VALUES ( '" + req.body[i].partyDate +  "','" + req.body[i].partyTime  + "',"+  req.body[i].Cust_Id +",'" + req.body[i].Cust_Id + "', 1, " +
 		req.body[i].guestCount*req.body[i].offer_price + "," + req.body[i].offerPackageID + "," + req.body[i].guestCount + ");" 
 	query = query + " SET @id = LAST_INSERT_ID();  ";
 		//executeQuery (res, query);
@@ -334,7 +334,7 @@ var query = "    select distinct v.Vendor_Id,v.Vendor_Name,v.Email_id vendor_Ema
 app.get("/getOrderHistory",cors(corsOptions),function(req,res){
 	var q = url.parse(req.url, true).query;
 	
-var query =  "   select distinct v.Vendor_Id,v.Vendor_Name,v.Email_id vendor_Email_Id, om.Invoice_No,om.Order_Date,om.CreatedOn, om.Total_Amount,om.GuestCount, vpo.vendor_caterer_package_offers, " 
+var query =  "   select distinct v.Vendor_Id,v.Vendor_Name,v.Email_id vendor_Email_Id, om.Invoice_No,om.Order_Date, om.Order_Time,om.CreatedOn, om.Total_Amount,om.GuestCount, vpo.vendor_caterer_package_offers, " 
 + " 	   vpo.Offer_Price, vm.Package_Name,vm.Package_Desc,vm.Package_Price "
 + " 	    ,dt.description packagedishtype,  IFNULL(ct.description,'')  cuisinestype, "
 + " 	    v.Vendor_Name, v.Email_id,v.Address,v.Contact_No " 
