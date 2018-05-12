@@ -72,7 +72,7 @@ function handle_database(query,req,res) {
  });
  
 var corsOptions = {
-    origin: 'http://www.deals2party.com.s3-website.ap-south-1.amazonaws.com',
+    origin: 'http://deals2party.com.s3-website.ap-south-1.amazonaws.com',
 	//origin: 'http://localhost:4200',
    optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204 
 } 
