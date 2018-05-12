@@ -621,6 +621,12 @@ app.get("/getPackageMenu",cors(corsOptions), function (req, res) {
             , req, res);
 });
 
+app.get("/getIndia_States",cors(corsOptions), function (req, res) {
+    -
+    handle_database(
+        ' select * from india_states'
+        , req, res);
+});
 
 // DELETE API
  app.delete("/api/user /:id", function(req , res){
