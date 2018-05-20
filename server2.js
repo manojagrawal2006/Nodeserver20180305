@@ -73,7 +73,7 @@ function handle_database(query,req,res) {
  
 var corsOptions = {
     origin: 'http://deals2party.com.s3-website.ap-south-1.amazonaws.com',
-	//origin: 'http://localhost:4200',
+//	origin: 'http://localhost:4200',
    optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204 
 } 
 
@@ -104,14 +104,14 @@ app.get("/api/user" ,cors(corsOptions), function(req , res){
   // partyDate: '2018-02-17',
   // partyTime: '18:00',
   // offer_price: 260
-	 console.log(Math.random());
+	 // console.log(Math.random());
 	 var query ="";
 	 
 	 query = query +	" delete from order_details where Order_Id in (select order_Id from order_master where `Order_Status_CD` = 1 and Cust_Id=" + req.body[0].Cust_Id + "); "
 	 query = query +	" delete from order_master where `Order_Status_CD` = 1 and Cust_Id=" + req.body[0].Cust_Id + "; "
 	 
 	 for (i = 0; i < req.body.length; i++) { 
-		console.log(req.body[i]);
+		// console.log(req.body[i]);
 		
 	query = query +	" INSERT INTO `D2P`.`order_master` (`Order_Date`, `Order_Time`,  `Cust_Id`,`Invoice_No`,`Order_Status_CD`,`Total_Amount`, " +
 	"`Vendor_Caterer_Package_Offers`,`GuestCount`) "
@@ -129,10 +129,10 @@ app.get("/api/user" ,cors(corsOptions), function(req , res){
 		}
 }
 //executeQuery (res, query);
-console.log(query);
+// console.log(query);
 		handle_database(query, req, res);
 		//console.log(res);
-	 console.log("addToCart");
+	 // console.log("addToCart");
 	 //var data = JSON.parse(req.body);
 	 // console.log(req.body.length);
 	 // console.log(req.body[0]);
@@ -145,16 +145,16 @@ console.log(query);
 
 //PUT API
  app.post("/ConfirmCart", function(req , res){
- console.log("ConfirmCart");
+ // console.log("ConfirmCart");
      // var d = new Date();
     // var invoiceNumber = d.getMonth() + d.getDate() + d.getFullYear() + d.getHours() + d.getMinutes() + d.getSeconds() + d.getMilliseconds();
  var query ="";
- console.log(req.body.length);
+ // console.log(req.body.length);
 	 
 	 for (i = 0; i < req.body.length; i++) { 
 			query = query +	"	UPDATE `D2P`.`order_master` SET `Order_Status_CD` = 2, Invoice_No='"+ req.body[i].InvoiceNumber + "' WHERE `Cust_Id` = " + req.body[i].Cust_Id + " and `Order_Status_CD` = 1  ; "
 	}
-console.log(query);
+// console.log(query);
 		handle_database(query, req, res);
 	
 				
@@ -162,16 +162,16 @@ console.log(query);
 });
 
  app.post("/UpdateCommunication", function(req , res){
- console.log("UpdateCommunication");
+ // console.log("UpdateCommunication");
      // var d = new Date();
     // var invoiceNumber = d.getMonth() + d.getDate() + d.getFullYear() + d.getHours() + d.getMinutes() + d.getSeconds() + d.getMilliseconds();
  var query ="";
- console.log(req.body.length);
+ // console.log(req.body.length);
 	 
 	 query = "	INSERT INTO  `D2P`.`order_communication_status`  (Invoice_No, order_communication_mode, communication_to, status) VALUES ( " 
 						+  req.body.invoiceNumber + ", '" +  req.body.mode + "', '" +  req.body.To + "', '"  +  req.body.status + "') "
 	
-console.log(query);
+// console.log(query);
 		handle_database(query, req, res);
 	
 				
@@ -222,26 +222,26 @@ transporter.sendMail(mailOptions, function(error, info){
              // res.send("Requerimiento enviado con éxito");
         // } 
 		if (error) {
-			console.log("Error in sending mail");
-			console.log(error);
+			// console.log("Error in sending mail");
+			// console.log(error);
 			query = "	INSERT INTO  `D2P`.`order_communication_status`  (Invoice_No, order_communication_mode, communication_to, status) VALUES ( " 
 						+  req.body.invoiceNumber + ", '" +  req.body.mode + "', '" +  req.body.To + "', 'failed') "
 	
-			console.log(query);
+			// console.log(query);
 			handle_Email_database(query);
           res.json({"code" : 100, "status" : "Error in sending mail"});
           return;
         }   
 		else
 		{
-			console.log(res);
+			// console.log(res);
 			 var query ="";
-			console.log(req.body.length);
+			// console.log(req.body.length);
 	 
 			query = "	INSERT INTO  `D2P`.`order_communication_status`  (Invoice_No, order_communication_mode, communication_to, status) VALUES ( " 
 						+  req.body.invoiceNumber + ", '" +  req.body.mode + "', '" +  req.body.To + "', 'success') "
 	
-			console.log(query);
+			// console.log(query);
 			handle_Email_database(query);
 		
 			res.json({"code" : 0, "status" : "Successfully sent mail"});
@@ -253,11 +253,11 @@ transporter.sendMail(mailOptions, function(error, info){
 app.get("/getPackage_Master",cors(corsOptions),function(req,res){
 	var q = url.parse(req.url, true).query;
 
-console.log(q);	
+// console.log(q);	
 
 var query = 
         '    select v.Vendor_Name, v.Address vendoraddress, v.LogoPath,v.Email_id,v.Contact_No, vpo.vendor_caterer_package_offers, dt.description dishtype, ct.description  cuisinestype,   vm.*,  '
-        + '  vpo.rangefrom,vpo.rangeto,vpo.offer_price  '
+        + '  vpo.rangefrom,vpo.rangeto,vpo.offer_price,vpo.pin  '
         + '      from vendor_caterer_package_master vm '
         + '    left join vendor_type vt on vm.vendor_type_cd = vt.vendor_type_cd  '
         + ' left join vendor_caterer_package_offers vpo  '
@@ -267,7 +267,7 @@ var query =
 		+ ' left join vendor_master v on vm.Vendor_Id=v.Vendor_Id'
         + ' where rangefrom is not null and rangeto is not null	and vpo.pin=' + + q.pin
 
-		 console.log(query);
+		 // console.log(query);
 		handle_database(query,
         req, res);
 });
@@ -299,7 +299,7 @@ var query = "    select distinct v.Vendor_Id,v.Vendor_Name,v.Email_id vendor_Ema
 + "  where om.Cust_Id="+ q.Cust_Id +" and om.Order_Status_CD=2 and om.Invoice_No= " + q.Invoice_No 
 + "  order by v.Vendor_Id,vpo.vendor_caterer_package_offers,cot.Course_Type_ID,dm.Dish_Type_ID "
 
-	 console.log(query);
+	 // console.log(query);
 		handle_database(query,
         req, res);
 });
@@ -337,7 +337,7 @@ app.get("/getOrderHistory",cors(corsOptions),function(req,res){
 var query =  "   select distinct v.Vendor_Id,v.Vendor_Name,v.Email_id vendor_Email_Id, om.Invoice_No,om.Order_Date, om.Order_Time,om.CreatedOn, om.Total_Amount,om.GuestCount, vpo.vendor_caterer_package_offers, " 
 + " 	   vpo.Offer_Price, vm.Package_Name,vm.Package_Desc,vm.Package_Price "
 + " 	    ,dt.description packagedishtype,  IFNULL(ct.description,'')  cuisinestype, "
-+ " 	    v.Vendor_Name, v.Email_id,v.Address,v.Contact_No " 
++ " 	    v.Vendor_Name, v.Email_id,v.Address,v.City,v.State,v.Pin, v.Contact_No " 
 
 + " 	      from order_master om  "
 + " 	      join vendor_caterer_package_offers vpo  on  om.Vendor_Caterer_Package_Offers=vpo.vendor_caterer_package_offers "
@@ -375,7 +375,7 @@ var query = query+   "   select distinct v.Vendor_Id,v.Vendor_Name,v.Email_id ve
 + " 	 order by v.Vendor_Id,vpo.vendor_caterer_package_offers,cot.Course_Type_ID,dm.Dish_Type_ID "
 
 
-	 console.log(query);
+	 // console.log(query);
 		handle_database(query,req, res);
 });
 
@@ -395,7 +395,7 @@ app.get("/getCustomerMaster",cors(corsOptions),function(req,res){
 	var q = url.parse(req.url, true).query;
 	var query = "select * from user_master where Mobile_No='" + q.Mobile_No + "' or User_Id='" + q.user_id + "' LIMIT 1";
 
-	console.log(query);
+	// console.log(query);
 	handle_database(query,
         req, res);
 });
@@ -428,7 +428,7 @@ app.get("/createCustomerAddress",cors(corsOptions),function(req,res){
 	}
 	var query = query + " UPDATE `D2P`.`user_master` SET  `Name` = '" + q.Name + "', `Email_id` = '" + q.Email_id + "'  WHERE `User_Id` = " + q.user_id + ";";
 	
-	// console.log(query);
+	  console.log(query);
 	handle_database(query,req, res);
 });
 
@@ -436,7 +436,7 @@ app.get("/Customer_UpdateMobile",cors(corsOptions),function(req,res){
 	var q = url.parse(req.url, true).query;
 	// console.log("update `user_master` set `Mobile_No` = '" + q.Mobile_No + "' where `Login_Id` = '"+ q.Login_Id + "';");
 	var query = "update `user_master` set `Mobile_No` = '" + q.Mobile_No + "' where `User_Id` = '"+ q.User_Id + "';";
-	console.log(query);
+	// console.log(query);
 	handle_database(query ,
         req, res);
 });	
