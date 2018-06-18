@@ -273,6 +273,32 @@ var query =
 });
 
 
+
+app.get("/getPackageMenuSelection",cors(corsOptions),function(req,res){
+	var q = url.parse(req.url, true).query;
+	
+
+var query = 
+
+			'	select   distinct vpc.pkg_course_max_selection maxselection, pc.vender_pkg_mst_id,  '
+		+	'	 ct.description coursetype , dm.course_type_id, '
+		+	'	 case when pc.dish_id > 0 then 1 else 0 '
+		+	'	 end dishselected   '
+		+	'	 from dishes_master dm    '
+		+	'	 join vendor_master vm on dm.vendor_id = vm.vendor_id   '
+		+	'	 join vendor_package_master vcm on vcm.vendor_id = vm.vendor_id '  
+		+	'	 join vendor_caterer_package_menu pc on pc.dish_id = dm.dish_id and pc.vender_pkg_mst_id = vcm.vender_pkg_mst_id and pc.vender_pkg_mst_id=' + q.vender_pkg_mst_id
+		+	'	 join course_type ct on dm.course_type_id = ct.course_type_id   '
+		+	'	 join vendor_caterer_package_course vpc on (vpc.vender_pkg_mst_id=pc.vender_pkg_mst_id and vpc.course_type_id=ct.course_type_id) '
+			      	
+		
+
+		 console.log(query);
+		handle_database(query,
+        req, res);
+});
+
+
 app.get("/getCustomerOrderEmailData",cors(corsOptions),function(req,res){
 	var q = url.parse(req.url, true).query;
 	
