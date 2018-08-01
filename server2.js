@@ -273,32 +273,6 @@ var query =
 });
 
 
-
-app.get("/getPackageMenuSelection",cors(corsOptions),function(req,res){
-	var q = url.parse(req.url, true).query;
-	
-
-var query = 
-
-			'	select   distinct vpc.pkg_course_max_selection maxselection, pc.vender_pkg_mst_id,  '
-		+	'	 ct.description coursetype , dm.course_type_id, '
-		+	'	 case when pc.dish_id > 0 then 1 else 0 '
-		+	'	 end dishselected   '
-		+	'	 from dishes_master dm    '
-		+	'	 join vendor_master vm on dm.vendor_id = vm.vendor_id   '
-		+	'	 join vendor_package_master vcm on vcm.vendor_id = vm.vendor_id '  
-		+	'	 join vendor_caterer_package_menu pc on pc.dish_id = dm.dish_id and pc.vender_pkg_mst_id = vcm.vender_pkg_mst_id and pc.vender_pkg_mst_id=' + q.vender_pkg_mst_id
-		+	'	 join course_type ct on dm.course_type_id = ct.course_type_id   '
-		+	'	 join vendor_caterer_package_course vpc on (vpc.vender_pkg_mst_id=pc.vender_pkg_mst_id and vpc.course_type_id=ct.course_type_id) '
-			      	
-		
-
-		 console.log(query);
-		handle_database(query,
-        req, res);
-});
-
-
 app.get("/getCustomerOrderEmailData",cors(corsOptions),function(req,res){
 	var q = url.parse(req.url, true).query;
 	
@@ -306,7 +280,7 @@ app.get("/getCustomerOrderEmailData",cors(corsOptions),function(req,res){
         // req, res);
 	//var query = "select * from CartOrder where emailid='" + q.Email_id + "' or mobile='" + q.mobile + "'";
 	
-var query = "    select distinct v.Vendor_Id,v.Vendor_Name,v.Email_id vendor_Email_Id, om.Invoice_No,om.Order_Date,om.Total_Amount,om.GuestCount,vpo.vendor_caterer_package_offers," 
+var query = "    select distinct v.Vendor_Id,v.Vendor_Name,v.Email_id vendor_Email_Id, om.Invoice_No,om.Order_Date,om.Order_Time,om.Total_Amount,om.GuestCount,vpo.vendor_caterer_package_offers," 
 + " vpo.Offer_Price, vm.Package_Name,vm.Package_Desc,vm.Package_Price" 
 + " ,dt.description packagedishtype,  ct.description  packagecuisinestype, " 
 + " v.Vendor_Name, v.Email_id,v.Address,v.Contact_No,dm.Description DishName,dt1.description dishtype,  ct1.description  cuisinestype " 
@@ -454,7 +428,7 @@ app.get("/createCustomerAddress",cors(corsOptions),function(req,res){
 	}
 	var query = query + " UPDATE `D2P`.`user_master` SET  `Name` = '" + q.Name + "', `Email_id` = '" + q.Email_id + "'  WHERE `User_Id` = " + q.user_id + ";";
 	
-	  console.log(query);
+	 // console.log(query);
 	handle_database(query,req, res);
 });
 
@@ -494,6 +468,51 @@ var req = http.request(options, function (res) {
 });
 req.end();
 });
+
+app.post("/SendD2PSMS", function(req , res){
+	
+var options = {
+  "method": "POST",
+  "hostname": "control.msg91.com",
+  "port": null,
+  "path": "/api/v2/sendsms",
+  "headers": {
+    "authkey": msg91key,
+    "content-type": "application/json"
+  }
+};
+
+var smsdata =
+			{ sender: 'SOCKET',
+			route: '4',
+			country: '91',
+			sms : []
+			 }; 
+	for (x in req.body)
+	{
+		smsdata.sms.push(req.body[x]);
+		console.log(req.body[x]);
+	}
+			 
+
+		var req = http.request(options, function (res) {
+		  var chunks = [];
+
+		  res.on("data", function (chunk) {
+			chunks.push(chunk);
+		  });
+
+		  res.on("end", function () {
+			var body = Buffer.concat(chunks);
+			//console.log(body.tostring());
+		  });
+		});
+
+		req.write(JSON.stringify(smsdata));
+		req.end();
+	
+});
+
 
 app.get("/resendOTP",cors(corsOptions),function(req1,res1){
 
@@ -609,6 +628,33 @@ app.get("/getvenue_Type",cors(corsOptions), function (req, res) {
             ' select * from venue_type	'
             , req, res);
 });
+
+
+
+app.get("/getPackageMenuSelection",cors(corsOptions),function(req,res){
+	var q = url.parse(req.url, true).query;
+	
+
+var query = 
+
+			'	select   distinct vpc.pkg_course_max_selection maxselection, pc.vender_pkg_mst_id,  '
+		+	'	 ct.description coursetype , dm.course_type_id, '
+		+	'	 case when pc.dish_id > 0 then 1 else 0 '
+		+	'	 end dishselected   '
+		+	'	 from dishes_master dm    '
+		+	'	 join vendor_master vm on dm.vendor_id = vm.vendor_id   '
+		+	'	 join vendor_package_master vcm on vcm.vendor_id = vm.vendor_id '  
+		+	'	 join vendor_caterer_package_menu pc on pc.dish_id = dm.dish_id and pc.vender_pkg_mst_id = vcm.vender_pkg_mst_id and pc.vender_pkg_mst_id=' + q.vender_pkg_mst_id
+		+	'	 join course_type ct on dm.course_type_id = ct.course_type_id   '
+		+	'	 join vendor_caterer_package_course vpc on (vpc.vender_pkg_mst_id=pc.vender_pkg_mst_id and vpc.course_type_id=ct.course_type_id) '
+			      	
+		
+
+		// console.log(query);
+		handle_database(query,
+        req, res);
+});
+
 
 
 app.get("/getPackageMenu",cors(corsOptions),function(req,res){
