@@ -351,7 +351,7 @@ var query =  "   select distinct v.Vendor_Id,v.Vendor_Name,v.Email_id vendor_Ema
 + " 	 left join cuisines_type ct1 on ct1.cuisines_type_id=dm.Cuisines_Type_ID "
 + " 	 left join course_type cot on dm.Course_Type_ID=cot.Course_Type_ID  "
 + " 	 where om.Cust_Id=" +  + q.userID + " and om.Order_Status_CD=2 "
-+ " 	 order by v.Vendor_Id,vpo.vendor_caterer_package_offers;  " 
++ " 	 order by om.CreatedOn desc;  " 
 
 
 var query = query+   "   select distinct v.Vendor_Id,v.Vendor_Name,v.Email_id vendor_Email_Id, om.Invoice_No,om.Order_Date,om.Total_Amount,om.GuestCount, vpo.vendor_caterer_package_offers, " 
@@ -483,7 +483,7 @@ var options = {
 };
 
 var smsdata =
-			{ sender: 'SOCKET',
+			{ sender: 'DLSPRT',
 			route: '4',
 			country: '91',
 			sms : []
@@ -647,6 +647,7 @@ var query =
 		+	'	 join vendor_caterer_package_menu pc on pc.dish_id = dm.dish_id and pc.vender_pkg_mst_id = vcm.vender_pkg_mst_id and pc.vender_pkg_mst_id=' + q.vender_pkg_mst_id
 		+	'	 join course_type ct on dm.course_type_id = ct.course_type_id   '
 		+	'	 join vendor_caterer_package_course vpc on (vpc.vender_pkg_mst_id=pc.vender_pkg_mst_id and vpc.course_type_id=ct.course_type_id) '
+		+   '    order by sorting_order '
 			      	
 		
 
@@ -671,7 +672,7 @@ var query =
             + '  join vendor_caterer_package_menu pc on pc.dish_id = dm.dish_id and pc.vender_pkg_mst_id = vcm.vender_pkg_mst_id and pc.vender_pkg_mst_id=' + q.vender_pkg_mst_id
             + '  join course_type ct on dm.course_type_id = ct.course_type_id '
       + '  join vendor_caterer_package_course vpc on (vpc.vender_pkg_mst_id=pc.vender_pkg_mst_id and vpc.course_type_id=ct.course_type_id) '
-	+'  order by dm.course_type_id'
+	+'  order by ct.sorting_order'
 		
 
 		// console.log(query);
