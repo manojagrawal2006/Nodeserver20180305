@@ -72,9 +72,8 @@ function handle_database(query,req,res) {
  });
  
 var corsOptions = {
- //   origin: 'http://deals2party.com.s3-website.ap-south-1.amazonaws.com',
-//	origin: 'http://localhost:4200',
-	origin: ['http://localhost:4200','http://deals2party.com.s3-website.ap-south-1.amazonaws.com','http://www.deals2party.com.s3-website.ap-south-1.amazonaws.com'],	
+    //origin: 'http://deals2party.com.s3-website.ap-south-1.amazonaws.com',
+	origin: ['http://localhost:4200','http://deals2party.com.s3-website.ap-south-1.amazonaws.com','http://www.deals2party.com.s3-website.ap-south-1.amazonaws.com'],
    optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204 
 } 
 
@@ -258,7 +257,7 @@ app.get("/getPackage_Master",cors(corsOptions),function(req,res){
 
 var query = 
         '    select v.Vendor_Name, v.Address vendoraddress, v.LogoPath,v.Email_id,v.Contact_No, vpo.vendor_caterer_package_offers, dt.description dishtype, ct.description  cuisinestype,   vm.*,  '
-        + '  vpo.rangefrom,vpo.rangeto,vpo.offer_price,vpo.pin  '
+        + '  min(vpo.rangefrom)  rangefrom, max(vpo.rangeto) rangeto,min(vpo.offer_price) offer_price,vpo.pin  '
         + '      from vendor_caterer_package_master vm '
         + '    left join vendor_type vt on vm.vendor_type_cd = vt.vendor_type_cd  '
         + ' left join vendor_caterer_package_offers vpo  '
@@ -266,7 +265,9 @@ var query =
         + ' left join dishes_type  dt on vm.dish_type_id =dt.dish_type_id '
         + ' left join cuisines_type ct on ct.cuisines_type_id=vm.cuisines_type_id '
 		+ ' left join vendor_master v on vm.Vendor_Id=v.Vendor_Id'
-        + ' where rangefrom is not null and rangeto is not null	and vpo.pin=' + + q.pin
+        + ' where rangefrom is not null and rangeto is not null	and vpo.pin=' +  q.pin
+		
+		+ '  group by vm.vender_pkg_mst_id order by vm.vender_pkg_mst_id'
 
 		 // console.log(query);
 		handle_database(query,
@@ -630,6 +631,24 @@ app.get("/getvenue_Type",cors(corsOptions), function (req, res) {
             , req, res);
 });
 
+app.get("/getPackageRangeSelection",cors(corsOptions),function(req,res){
+	var q = url.parse(req.url, true).query;
+	
+
+var query = 
+
+    '  select vpo.* '
+	+ ' from vendor_caterer_package_master vm  '
+    + ' join vendor_caterer_package_offers vpo  on vpo.vender_pkg_mst_id =vm.vender_pkg_mst_id  and'
+    + ' vm.vender_pkg_mst_id=' + q.vender_pkg_mst_id 
+	+ ' order by vpo.rangefrom '  
+  	
+		
+
+		// console.log(query);
+		handle_database(query,
+        req, res);
+});
 
 
 app.get("/getPackageMenuSelection",cors(corsOptions),function(req,res){
