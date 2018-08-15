@@ -72,8 +72,9 @@ function handle_database(query,req,res) {
  });
  
 var corsOptions = {
-    origin: 'http://deals2party.com.s3-website.ap-south-1.amazonaws.com',
+ //   origin: 'http://deals2party.com.s3-website.ap-south-1.amazonaws.com',
 //	origin: 'http://localhost:4200',
+	origin: ['http://localhost:4200','http://deals2party.com.s3-website.ap-south-1.amazonaws.com','http://www.deals2party.com.s3-website.ap-south-1.amazonaws.com'],	
    optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204 
 } 
 
