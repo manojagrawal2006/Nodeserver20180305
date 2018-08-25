@@ -355,27 +355,15 @@ var query =  "   select distinct v.Vendor_Id,v.Vendor_Name,v.Email_id vendor_Ema
 + " 	 where om.Cust_Id=" +  + q.userID + " and om.Order_Status_CD=2 "
 + " 	 order by om.CreatedOn desc;  " 
 
-
-var query = query+   "   select distinct v.Vendor_Id,v.Vendor_Name,v.Email_id vendor_Email_Id, om.Invoice_No,om.Order_Date,om.Total_Amount,om.GuestCount, vpo.vendor_caterer_package_offers, " 
-+ " 	   vpo.Offer_Price, vm.Package_Name,vm.Package_Desc,vm.Package_Price "
-+ " 	    ,dt.description packagedishtype,  ct.description  cuisinestype, "
-+ " 	    v.Vendor_Name, v.Email_id,v.Address,v.Contact_No,dm.Description DishName,dt1.description dishtype,  ct1.description  cuisinestype "
-+ " 	    ,cot.Description courseType ,  vpc.pkg_Course_Max_Selection   "
-+ " 	      from order_master om  "
-+ " 	      join vendor_caterer_package_offers vpo  on  om.Vendor_Caterer_Package_Offers=vpo.vendor_caterer_package_offers "
-+ " 	      join vendor_caterer_package_master vm on vpo.vender_pkg_mst_id =vm.vender_pkg_mst_id "
-+ " 	        left join dishes_type  dt on vm.dish_type_id =dt.dish_type_id  "
-+ " 	 left join cuisines_type ct on ct.cuisines_type_id=vm.cuisines_type_id  "
-+ " 	 left join vendor_master v on vm.Vendor_Id=v.Vendor_Id  "
-+ " 	  left join order_details od on  om.Order_Id=od.Order_Id "
-+ " 	  left join dishes_master dm on dm.Dish_Id=od.Menu_Dtl_Id "
-+ " 	 left join dishes_type  dt1 on dm.Dish_Type_ID =dt1.dish_type_id  "
-+ " 	 left join cuisines_type ct1 on ct1.cuisines_type_id=dm.Cuisines_Type_ID "
-+ " 	 left join course_type cot on dm.Course_Type_ID=cot.Course_Type_ID  "
-+ "      left join vendor_caterer_package_course vpc on (vpc.vender_pkg_mst_id=vm.vender_pkg_mst_id and vpc.course_type_id=cot.Course_Type_ID)    "
-+ " 	 where om.Cust_Id=" +  + q.userID + " and om.Order_Status_CD=2  and dm.Description is not null "
-+ " 	 order by v.Vendor_Id,vpo.vendor_caterer_package_offers,cot.Course_Type_ID,dm.Dish_Type_ID "
-
+	 var query = query + 	" select om.Order_Id, om.Invoice_No, dm.dish_id, dm.description dishname, ct.description coursetype , "
+	   + "   dm.course_type_id, dm.price, dt.description dishtype  , cot.Description menuCoursetype " // ,   om.*
+	   + "   from order_master om  "
+	   + "   join order_details od on om.Order_Id = od.Order_Id "
+	   + "   join dishes_master dm on dm.Dish_Id=od.Menu_Dtl_Id  "
+	   + " 	 join dishes_type  dt on dm.Dish_Type_ID =dt.dish_type_id  "
+	   + " 	 join cuisines_type ct on ct.cuisines_type_id=dm.Cuisines_Type_ID  "
+	   + " 	 join course_type cot on dm.Course_Type_ID=cot.Course_Type_ID   "
+	   + " 	 where om.Cust_Id=    " +   q.userID + " and om.Order_Status_CD=2  " //-- om.Invoice_No = 2786
 
 	 // console.log(query);
 		handle_database(query,req, res);
