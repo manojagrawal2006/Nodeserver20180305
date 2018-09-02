@@ -286,7 +286,7 @@ var query = "    select distinct v.Vendor_Id,v.Vendor_Name,v.Email_id vendor_Ema
 + " vpo.Offer_Price, vm.Package_Name,vm.Package_Desc,vm.Package_Price" 
 + " ,dt.description packagedishtype,  ct.description  packagecuisinestype, " 
 + " v.Vendor_Name, v.Email_id,v.Address,v.Contact_No,dm.Description DishName,dt1.description dishtype,  ct1.description  cuisinestype " 
-+ " ,cot.Description courseType " 
++ " ,cot.Description courseType, vm.Package_Type_Id " 
 + " from order_master om " 
 + " join vendor_caterer_package_offers vpo  on  om.Vendor_Caterer_Package_Offers=vpo.vendor_caterer_package_offers " 
 + " join vendor_caterer_package_master vm on vpo.vender_pkg_mst_id =vm.vender_pkg_mst_id " 
