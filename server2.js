@@ -35,10 +35,12 @@ var pool      =    mysql.createPool({
 });
 
 	var transporter = nodemailer.createTransport({
-  service: 'gmail',
+  // service: 'gmail',
+		host: "email-smtp.us-east-1.amazonaws.com",
+		  port: 587,
   auth: {
-    user: 'codedeals2party@gmail.com',
-    pass: 'jaipal2108'
+    user: 'AKIAJ55A4VRSGR77RFUA',
+    pass: 'AsXwwh6mvGUNPjzBXe06jqB8UBj4DGgVwt8UaaY+muuM'
   }
 });
 
