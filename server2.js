@@ -34,15 +34,6 @@ var pool      =    mysql.createPool({
 	multipleStatements: true
 });
 
-var transporter = nodemailer.createTransport({
-     host: "smtp.sendgrid.net",
-      port: 587,
-     auth: {
-        user : "apikey",
-        pass:"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"
-     }
-});
-
 
 
 function handle_database(query,req,res) {
