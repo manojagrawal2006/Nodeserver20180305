@@ -25,10 +25,10 @@ var msg91key="200835Ad7aLZdJ5a9ac154";
 
 var pool      =    mysql.createPool({
     connectionLimit : 0, //important
-    host     : 'd2p.cayzymtlzfaw.ap-south-1.rds.amazonaws.com',
+    host     : 'd2pdev.cxtsfgqbeseg.us-east-1.rds.amazonaws.com',
     port	  : 3306,
-    user     : 'D2P',
-    password : 'password',
+    user     : 'd2pnew',
+    password : 'deals2party',
     database: 'D2P',
     debug    :  false,
 	multipleStatements: true
@@ -253,9 +253,11 @@ app.get("/getPackage_Master",cors(corsOptions),function(req,res){
 
 var query = 
         '    select v.Vendor_Name, v.Address vendoraddress, v.LogoPath,v.Email_id,v.Contact_No, vpo.vendor_caterer_package_offers, dt.description dishtype, ct.description  cuisinestype,   vm.*,  '
-        + '  min(vpo.rangefrom)  rangefrom, max(vpo.rangeto) rangeto,min(vpo.offer_price) offer_price,vpo.pin  '
+        + '  min(vpo.rangefrom)  rangefrom, max(vpo.rangeto) rangeto, min(vpo.offer_price) offer_price,vpo.pin,  '
+		+ '   pu.Package_Unit                 '
         + '      from vendor_caterer_package_master vm '
         + '    left join vendor_type vt on vm.vendor_type_cd = vt.vendor_type_cd  '
+		+ '    left join package_units pu on vm.Package_Unit_ID = pu.Package_Unit_ID  '
         + ' left join vendor_caterer_package_offers vpo  '
         + ' on vpo.vender_pkg_mst_id =vm.vender_pkg_mst_id '
         + ' left join dishes_type  dt on vm.dish_type_id =dt.dish_type_id '
